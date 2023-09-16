@@ -1,3 +1,5 @@
+
+from dataclasses import dataclass
 class Carta:
     def __init__(self, pinta:str, valor: str, tapada: bool):
         self.pinta: str = pinta
