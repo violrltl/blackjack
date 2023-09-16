@@ -7,7 +7,7 @@ class Carta:
         self.tapada: bool = False
 
 class Mano:
-
+cdcdcd
     def __init__(self, cartas: tuple):
         self.cartas = []
 
