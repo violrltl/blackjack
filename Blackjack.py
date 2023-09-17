@@ -1,184 +1,157 @@
+import random
+from dataclasses import dataclass, field
+from typing import ClassVar, Optional
+#se refiere a que una variable puede tomr varios tipos de valores
 
-from dataclasses import dataclass
+
+@dataclass
 class Carta:
-    def __init__(self, pinta:str, valor: str, tapada: bool):
-        self.pinta: str = pinta
-        self.valor: str = valor
-        self.tapada: bool = False
+    VALORES: ClassVar[list[str]] = ["A","2", "3", "4", "5", "6", "7", "8", "9", "J", "Q", "K"] #classvar indica que una variable es variable de clase y no de instancia
+    PINTAS:  ClassVar[list[str]] = ["corazon", "trebol", "diamante", "espada"]
+    pinta: str
+    valor: str
+    tapada: bool = field(init= False, default= False) #field se usa para establecer un valor con rpedeterminado
+
+    def calcular_valor(self, as_11=True)->int:
+        if self.valor== "A":
+            if as_11:
+                return 11
+            else:
+                return 1
+            pass
+        elif self.valor in ["J", "Q", "K"]:
+            return 10
+        else:
+            return int(self.valor)
+
+    def __str__(self)-> str:
+        return  f"{self.valor}{self.pinta}"
+
 
 class Mano:
-cdcdcd
-    def __init__(self, cartas: tuple):
-        self.cartas = []
+    def __init__(self, cartas: tuple[Carta, Carta]):
+        self.cartas: list[Carta] = []
+        self.cartas.extend(self.cartas)
 
     def es_blackjack(self)-> bool:
-        if self.calcular_valor_mano() == 21 and len(self.cartas) == 2:
-            return True
-        else:
-            "el numero de cartas no supera 21"
-            return False
+      if len(self.cartas)> 2:
+
+          print("tu mano pasa de 21, has perdido e juego")
+          return False
+      else:
+          return self.cartas[0].valor == "A" and self.cartas[1].valor in ["10", "J", "Q", "K"]\
+                 or self.cartas[1].valor == "A" and self.cartas[0].valor in ["10", "J", "Q", "K"]
 
 
-    def calcular_valor_mano(self) -> int:
-        valor_total= 0
-        ases= 0
+    def agregar_carta(self, carta:Carta):
+        self.cartas.append(carta)
 
+    def calcular_valor(self)-> int:
+        valor= 0
         for carta in self.cartas:
-            if carta.valor in ["K", "Q", "J"]:
-                valor_total += 10
-            elif carta.valor == "A":
-                valor_total += 11
-                ases += 1
-            else:
-                valor_total += int(carta.valor)
+            valor += carta.calcular_valor(valor < 11)
+        return valor
 
-        while ases > 0 and valor_total > 21:
-            valor_total -= 10
-            ases -= 1
-        return valor_total
+    def destapar(self):
+        for self.carta in self.cartas:
+            self.tapada = False
+
 
 
 
 class Baraja:
 
-
     def __init__(self):
-        self.cartas: list[Carta] = []
-
+        self.cartas:list[Carta]=[Carta(pinta, valor)for valor in Carta.VALORES for pinta in Carta.PINTAS]
 
     def revolver(self):
-        pinta = ["corazon", "trebol", "diamante", "espada"]
-        valor = ["A","2", "3", "4", "5", "6", "7", "8", "9", "J", "Q", "K"]
+        random.shuffle(self.cartas)
 
-        for pinta in pinta:
-              for valor in valor:
-                carta = Carta(pinta, valor, False)
-                self.cartas.append(carta)
 
-    def repartir_carta(self, tapada:bool)-> Carta:
-
-        if self.cartas:
+    def repartir_carta(self, tapada:False)-> Optional[Carta]:
+        if len(self.cartas) > 0:
             carta = self.cartas.pop()
             carta.tapada = tapada
             return carta
         else:
-            print("La baraja está vacía. Debes volver a barajar las cartas.")
-            self.revolver()
-            return self.repartir_carta(tapada)
+            return None
 
 
 
 class Jugador:
-    def __init__(self,nombre: str, fichas: int):
+    def __init__(self, nombre: str, fichas: int):
         self.nombre = nombre
         self.fichas = fichas
-        self.mano: Mano = Mano
-        self.baraja: Baraja= Baraja()
-        self.casa= Casa
-
+        self.baraja: Baraja = Baraja()
     def inicializar_mano(self, cartas):
-        self.mano = Mano(cartas)
+        self.Mano = Mano(cartas)
+        print(self.Mano)
 
-    def jugada_jugador(self, Jugador):
-        while True:
-            Jugada= input("desea pedir una carta (p) o plantarse? (a)")
-            if Jugada== "p":
-                carta_nueva = self.baraja.repartir_carta(False)
-                self.mano.cartas.append(carta_nueva)
-                self.mostrar_mano()
+    def recibir_carta(self, carta: Carta):
+        carta= self.baraja.repartir_carta(carta)
+        if carta:
+            self.Mano.agregar_carta(carta)
 
-                print(f"Has recibido una carta: {carta_nueva.valor} de {carta_nueva.pinta}")
-                print(f"Cartas en mano: {len(self.mano.cartas)}")
-                if self.mano.calcular_valor_mano() > 21:
-                    print("Te has pasado de 21. ¡Has perdido!")
-            elif Jugada == "a":
-                valor_mano = self.mano.calcular_valor_mano()
-                print(f"Valor de la mano: {valor_mano}")
-                self.casa.jugada_casa(self.mano)
-                break
 
-    def mostrar_mano(self):
-        print(f"Mano de {self.nombre}:")
-        for carta in self.mano.cartas:
-            print(f"{carta.valor} de {carta.pinta}")
+    def agregar_fichas(self):
+        pass
+    def tiene_fichas(self)->bool:
+        pass
+
+
 
 class Casa:
 
     def __init__(self):
-        self.mano: Mano= Mano
+        pass
 
 
     def inicializar_mano(self, cartas: tuple):
-        self.mano = Mano(cartas)
+        pass
 
     def jugada_casa(self):
-        while self.mano.calcular_valor_mano() < 17:
-            carta_nueva = self.baraja.repartir_carta(False)
-            self.mano.cartas.append(carta_nueva)
+        pass
 
-
-        if self.mano.calcular_valor_mano() > 21:
-            print("¡La Casa se ha pasado de 21! ¡Ganas!")
-            return True
-        return False
 
 
     def mostrar_mano(self, revelar= False):
-        print("Mano de la Casa:")
-        for carta in self.mano.cartas:
-            if not revelar and carta.tapada:
-                print("Carta tapada")
-            else:
-                print(f"{carta.valor} de {carta.pinta}")
+        pass
 
 class Blackjack():
+    baraja: Baraja= Baraja()
 
     def __init__(self):
-        self.Jugador: Jugador= None
-        self.Casa: Casa = Casa()
-        self.baraja: Baraja = Baraja()
-
-    def registrar_jugador(self, nombre: str):
-        self.nombre= nombre
-        print("bienvenido a Backjack " + nombre)
-        self.Jugador = Jugador( nombre, 100)
-        self.Jugador.inicializar_mano(())
-        nuevo_juego= input("desea iniciar un nevo juego? si: a   no: b ")
-        if nuevo_juego == "a":
-             self.iniciar_juego()
-
-
-
+        pass
+    def registrar_jugador(self, nombre:str):
+        self.Jugador = Jugador(nombre, 100)
+        print(f"bienvenido {self.Jugador.nombre}")
+        nuevo_juego= input("desea iniciar un nuevo juego? a:si b:no")
+        if nuevo_juego== "a":
+            self.iniciar_juego()
+        else:
+            pass
 
     def iniciar_juego(self):
-        self.apuesta= int(input(f"{self.nombre}, ¿cuántas fichas desea apostar? (Tiene {self.Jugador.fichas} fichas disponibles): "))
-        print(self.apuesta)
+        self.apuesta = int(input(f"cuantas fichas desea apostar {self.Jugador.nombre}, actualmente tiene {self.Jugador.fichas} "))
+        self.Jugador.inicializar_mano(Carta)
+
         if self.apuesta > self.Jugador.fichas:
-            print("no es posible hacer la apuesta, supera la cantidad de fichas")
-            return
+            print("no es posible realizar la apuesta")
         else:
             self.baraja.revolver()
-            self.Jugador.inicializar_mano([self.baraja.repartir_carta(False), self.baraja.repartir_carta(False)])
-            self.Casa.inicializar_mano([self.baraja.repartir_carta(False), self.baraja.repartir_carta(True)])
+            carta_nueva=self.baraja.repartir_carta(tapada=False)
+            self.Jugador.recibir_carta(carta_nueva)
 
-            if self.Jugador.mano.es_blackjack():
-                print("el numero de cartas supera 21, has perdido el juego")
-                self.finalizar_juego()
-                self.jugador.fichas -= self.apuesta # Pago por Blackjack (1.5 veces la apuesta)
-                print(f"Tus fichas restantes: {self.jugador.fichas}")
-                nuevo_juego = input("¿Desea jugar de nuevo? (si: S, no: N): ").upper()
-
-            else:
-                self.Jugador.jugada_jugador(self.Jugador)
 
 
 
     def finalizar_juego(self):
         pass
 
-nombre = input("Ingrese su nombre: ")
+
 jugadorw = Blackjack()
+nombre= input("Ingrese su nombre: ")
 jugadorw.registrar_jugador(nombre)
 
 
-print(jugadorw.nombre)
+print(jugadorw)
